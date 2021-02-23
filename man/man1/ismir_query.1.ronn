@@ -22,6 +22,8 @@ If given a WAV file, you must ensure that it are in 5512Hz beforehand.
 
   -p [ --processed-query ] arg Preprocessed query file. Not currently implemented
 
+  -v [ --version ]             Print version
+
 ## OUTPUT
 
 The program will output a line per hit, as below:

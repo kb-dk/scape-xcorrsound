@@ -21,6 +21,8 @@ If given WAV files, you must ensure that they are in 5512Hz beforehand.
                         given on stdin
   -n [ --name ] arg     Name if input is on stdin
 
+  -v [ --version ]      Print version
+
 ## AUTHOR
 Jesper Sindahl Nielsen <jsn@statsbiblioteket.dk>
 Asger Askov Blekinge <abr@kb.dk>

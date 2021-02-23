@@ -1,3 +1,4 @@
+#include "cmake_config.h"
 #include <boost/program_options.hpp>
 #include <cstdlib>
 #include <fingerprint_db.hh>
@@ -55,7 +56,8 @@ void single(std::string name = "") {
 void init(int argc, char *argv[]) {
     po::options_description generic("Program options");
     generic.add_options()
-	("help,h", "Print help message and return, everything else is ignored");
+	("help,h", "Print help message and return, everything else is ignored")
+        ("version,v", "Print version and return. Everything else is ignored");
     
     po::options_description hidden("Settings");
     hidden.add_options()
@@ -81,6 +83,11 @@ void init(int argc, char *argv[]) {
         std::cout << hidden << std::endl;
 
         exit(0);
+    }
+
+    if (vm.count("version")) {
+        std::cout << "ismir_build_index xcorrsound version " << XCORRSOUND_VERSION << std::endl;
+        return;
     }
 
     if (vm.count("dbname")) {

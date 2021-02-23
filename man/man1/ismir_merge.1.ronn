@@ -12,6 +12,8 @@ ismir_merge can merge two index files (to keep down the number of index files).
 
   -i [ --input-databases ] arg List of input databases to merge
 
+  -v [ --version ]             Print version
+
 Both input and output database names must be specified
 
 ## AUTHOR

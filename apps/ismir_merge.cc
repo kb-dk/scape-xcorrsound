@@ -1,3 +1,4 @@
+#include "cmake_config.h"
 #include <boost/program_options.hpp>
 #include <cstdlib>
 #include <fingerprint_db.hh>
@@ -14,7 +15,8 @@ void init(int argc, char *argv[]) {
 
     po::options_description generic("Program options");
     generic.add_options()
-        ("help,h", "Print help message and return. Everything else is ignored");
+        ("help,h", "Print help message and return. Everything else is ignored")
+        ("version,v", "Print version and return. Everything else is ignored");
 
     po::positional_options_description positional;
     positional.add("input-databases", -1);
@@ -36,6 +38,11 @@ void init(int argc, char *argv[]) {
         std::cout << generic << std::endl;
         std::cout << hidden << std::endl;
         std::cout << "Both input and output database names must be specified" << std::endl << std::endl;
+        return;
+    }
+
+    if (vm.count("version")) {
+        std::cout << "ismir_merge xcorrsound version " << XCORRSOUND_VERSION << std::endl;
         return;
     }
 
