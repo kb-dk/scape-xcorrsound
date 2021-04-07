@@ -78,6 +78,8 @@ meaning perfect match.
 is an integer giving the channel according to the wav
 specification. By default c = 0.
 
+ * --version
+Print version.
 
 Note that all the tools will need access to write to a file called
 <tool>.log where various information about a run will be stored.
