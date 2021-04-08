@@ -2,7 +2,7 @@
 
 outputfile="$1"
 
-klipLinker="http://teg-desktop.sb.statsbiblioteket.dk:8080/drdat/"
+klipLinker="http://miaplacidus.statsbiblioteket.dk:9311/drdat/"
 
 [ -z "${outputile+x}" ] && echo "path,file,offset,channel,hitStart,distance,playbackUrl" > "$outputfile"
 
