@@ -4,13 +4,14 @@ outputfile="$1"
 
 klipLinker="http://miaplacidus.statsbiblioteket.dk:9311/drdat/"
 
+
 [ -z "${outputile+x}" ] && echo "path,file,offset,channel,hitStart,distance,playbackUrl" > "$outputfile"
 
 while read line; do
-  echo "$line";
+  [ "$outputfile" != "/dev/stdout" ] && echo "$line";
   if [ -z "${outputile+x}" ]; then
     #match in '/dr-dat/4/files/Batch33/Disc13/mp3_128kbps/P3_2200_0000_041202_001.mp3' at 00:01:35 with distance 1207
-    echo "$line" | grep -E -q "^match in '\S+' at \S+ with distance [0-9]+$" - || continue\
+    echo "$line" | grep -E -q "^match in '\S+' at \S+ with distance [0-9]+$" - || continue
 
     path=$(echo "$line" | cut -d' ' -f3 | cut -d\' -f2)
     file=$(echo "$path" | rev | cut -d'/' -f1 | rev)
