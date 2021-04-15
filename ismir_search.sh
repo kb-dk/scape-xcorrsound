@@ -67,7 +67,7 @@ else
 fi
 
 #This should ensure that the results are sorted
-echo -e "$indexes" | xargs -r -i -P"$ISMIR_CONCURRENT_SEARCH" bash -c 'mkdir -p /dev/shm/$channel-$year-{}; export TmpSoundIndex=/dev/shm/$channel-$year-{}/; ismir_query $ISMIR_CRITERIA -q "$needle" -d "/data01/larm/dr-dat-index/$channel/dr-dat.P3.$year.{}.list.index"' |
+echo -e "$indexes" | xargs -r -i -P"$ISMIR_CONCURRENT_SEARCH" bash -c 'mkdir -p /dev/shm/$channel-$year-{}; export TmpSoundIndex=/dev/shm/$channel-$year-{}/; ismir_query $ISMIR_CRITERIA -q "$needle" -d "/data01/larm/dr-dat-index/$channel/dr-dat.$channel.$year.{}.list.index"' |
   sed 's/mp3_128kbps/mp3-128kbps/' |
   sort -t '_' -k4n -k2n |
   sed 's/mp3-128kbps/mp3_128kbps/' |
