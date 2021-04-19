@@ -11,7 +11,7 @@ ISMIR_CRITERIA=""
 sound-match -v | grep -q -F "2.1.0" && ISMIR_CRITERIA=-c${DISTANCE:-2867}
 export ISMIR_CRITERIA
 
-ISMIR_CONCURRENT_SEARCH=${ISMIR_CONCURRENT_SEARCH:-12}
+ISMIR_CONCURRENT_SEARCH=${ISMIR_CONCURRENT_SEARCH:-24}
 
 #TODO explain the parameters here
 function usage() {
@@ -61,10 +61,13 @@ for year in $years; do
     echo "${year}.${month}"
   done
 done |
-xargs -r -i -P"$ISMIR_CONCURRENT_SEARCH" bash -c 'mkdir -p /dev/shm/$channel-{}; export TmpSoundIndex=/dev/shm/$channel-{}/; ismir_query $ISMIR_CRITERIA -q "$needle" -d "/data01/larm/dr-dat-index/$channel/dr-dat.$channel.{}.list.index"' |
-    sed 's/mp3_128kbps/mp3-128kbps/' |
-    sort -t '_' -k4n -k2n |
-    sed 's/mp3-128kbps/mp3_128kbps/' |
-./ismir_result_format.sh /dev/stdout
+xargs -r -i -P"$ISMIR_CONCURRENT_SEARCH" bash -c 'mkdir -p /dev/shm/$channel-{}; export TmpSoundIndex=/dev/shm/$channel-{}/; ismir_query $ISMIR_CRITERIA -q "$needle" -d "/data01/larm/dr-dat-index/$channel/dr-dat.$channel.{}.list.index"'
+
+
+#|
+#    sed 's/mp3_128kbps/mp3-128kbps/' |
+#    sort -t '_' -k4n -k2n |
+#    sed 's/mp3-128kbps/mp3_128kbps/' |
+#./ismir_result_format.sh /dev/stdout
 
 # match in '/dr-dat/4/files/Batch33/Disc13/mp3_128kbps/P3_2200_0000_041202_001.mp3' at 00:01:35 with distance 1207

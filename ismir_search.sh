@@ -67,10 +67,12 @@ else
 fi
 
 #This should ensure that the results are sorted
-echo -e "$indexes" | xargs -r -i -P"$ISMIR_CONCURRENT_SEARCH" bash -c 'mkdir -p /dev/shm/$channel-$year-{}; export TmpSoundIndex=/dev/shm/$channel-$year-{}/; ismir_query $ISMIR_CRITERIA -q "$needle" -d "/data01/larm/dr-dat-index/$channel/dr-dat.$channel.$year.{}.list.index"' |
-  sed 's/mp3_128kbps/mp3-128kbps/' |
-  sort -t '_' -k4n -k2n |
-  sed 's/mp3-128kbps/mp3_128kbps/' |
-  ./ismir_result_format.sh /dev/stdout
+echo -e "$indexes" | xargs -r -i -P"$ISMIR_CONCURRENT_SEARCH" bash -c 'mkdir -p /dev/shm/$channel-$year-{}; export TmpSoundIndex=/dev/shm/$channel-$year-{}/; ismir_query $ISMIR_CRITERIA -q "$needle" -d "/data01/larm/dr-dat-index/$channel/dr-dat.$channel.$year.{}.list.index"'
+
+#|
+#  sed 's/mp3_128kbps/mp3-128kbps/' |
+#  sort -t '_' -k4n -k2n |
+#  sed 's/mp3-128kbps/mp3_128kbps/' |
+#  ./ismir_result_format.sh /dev/stdout
 
 # match in '/dr-dat/4/files/Batch33/Disc13/mp3_128kbps/P3_2200_0000_041202_001.mp3' at 00:01:35 with distance 1207
