@@ -89,6 +89,7 @@ to find small overlaps e.g. a few minutes.
 
 The audio index tools were developed to search for a short sound bite (a jingle) in a large audio archive. The 
 implementation is derived from the paper "A Highly Robust Audio Fingerprinting System", Jaap Haitsma og Ton Kalker, ISMIR 2002.
+<https://ismir2002.ismir.net/proceedings/02-FP04-2.pdf>
 
 Publications
 ------------
