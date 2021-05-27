@@ -1,0 +1,741 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- Version 1.6 to enable the use of docValues as stored for all fields:
+     https://lucene.apache.org/solr/guide/6_6/docvalues.html#DocValues-RetrievingDocValuesDuringSearch -->
+<schema name="example" version="1.6">
+    <types>
+
+        <fieldType name="long" class="solr.TrieLongField" precisionStep="0" positionIncrementGap="0"/>
+        <fieldType name="int" class="solr.TrieIntField" precisionStep="0" positionIncrementGap="0"/>
+        <fieldType name="string" class="solr.StrField" sortMissingLast="true" />
+
+        <fieldType name="textSpell" class="solr.TextField" positionIncrementGap="100" indexed="true" stored="false" multiValued="true">
+            <analyzer>
+                <tokenizer class="solr.StandardTokenizerFactory"/>
+                <filter class="solr.LowerCaseFilterFactory"/>
+                <!--                <charFilter class="dk.statsbiblioteket.summa.common.solr.analysis.LowerCaseCharFilterFactory"/>-->
+                <filter class="solr.StandardFilterFactory"/>
+                <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
+                <filter class="solr.TrimFilterFactory"/>
+                <filter class="solr.LengthFilterFactory" min="1" max="9999999" />        
+            </analyzer>
+        </fieldType>
+
+        <!-- Summa field: KeyWordAnalyzer, Field.Index.NOT_ANALYZED,,Field.Store.YES,Field.TermVector.NO -->
+        <!-- Used by recordID, recordBase and authID -->
+        <fieldType name="key" class="solr.StrField" indexed="true" stored="true" multiValued="false" required="true" termVectors="false"/>
+
+
+        <!-- Summa field: KeyWordAnalyzer, Field.Index.ANALYZED,Field.Store.NO,Field.TermVector.NO -->
+        <fieldType name="verbatim" class="solr.StrField" indexed="true" stored="false" multiValued="true" termVectors="false"/>
+
+        <fieldType name="trie_float" class="solr.TrieFloatField" indexed="true" stored="true" multiValued="true" termVectors="false" omitNorms="true" />
+
+         <fieldType name="keyword_sorted" class="solr.ICUCollationField" locale="da" strength="secondary" indexed="true" stored="true" termVectors="false"/>
+
+         <!-- Summa field: SummaKeyWordAnalyzer, Field.Index.ANALYZED,Field.Store.YES,Field.TermVector.NO -->
+        <fieldType name="keyword_sorted_old" class="solr.TextField" indexed="true" stored="true" termVectors="false">
+             <analyzer type="index">
+                <tokenizer class="solr.KeywordTokenizerFactory"/>
+                <filter class="solr.LowerCaseFilterFactory"/>
+                <!--                <charFilter class="dk.statsbiblioteket.summa.common.solr.analysis.LowerCaseCharFilterFactory"/>-->
+                <charFilter class="solr.MappingCharFilterFactory" mapping="keywords_transliterations.txt"/>
+                <charFilter class="solr.MappingCharFilterFactory" mapping="default_replace_transliterations.txt"/>
+                <charFilter class="solr.MappingCharFilterFactory" mapping="void_transliterations.txt"/>
+                <charFilter class="solr.MappingCharFilterFactory" mapping="void_analyse_only_transliterations.txt"/>
+                <charFilter class="solr.MappingCharFilterFactory" mapping="blank_transliterations.txt"/>
+                <charFilter class="solr.PatternReplaceCharFilterFactory" pattern="\s+" replacement=" "/>                                
+<!--                <filter class="solr.ICUCollationKeyFilterFactory" locale="da" strength="primary" alternate="non-ignorable"/>-->
+                <filter class="solr.TrimFilterFactory"/>
+                <filter class="solr.LengthFilterFactory" min="1" max="9999999" />
+            </analyzer>
+             <analyzer type="query">
+                <tokenizer class="solr.KeywordTokenizerFactory"/>
+                <filter class="solr.LowerCaseFilterFactory"/>
+                <!--                <charFilter class="dk.statsbiblioteket.summa.common.solr.analysis.LowerCaseCharFilterFactory"/>-->
+                <charFilter class="solr.MappingCharFilterFactory" mapping="keywords_transliterations.txt"/>
+                <charFilter class="solr.MappingCharFilterFactory" mapping="default_replace_transliterations.txt"/>
+                <charFilter class="solr.MappingCharFilterFactory" mapping="void_transliterations.txt"/>
+                <charFilter class="solr.MappingCharFilterFactory" mapping="blank_transliterations.txt"/>
+                <charFilter class="solr.PatternReplaceCharFilterFactory" pattern="\s+" replacement=" "/>                                
+<!--                <filter class="solr.ICUCollationKeyFilterFactory" locale="da" strength="primary" alternate="non-ignorable"/>-->
+                <filter class="solr.TrimFilterFactory"/>
+                <filter class="solr.LengthFilterFactory" min="1" max="9999999" />
+            </analyzer>
+        </fieldType>
+
+        <!-- Summa field: SummaKeyWordAnalyzer, Field.Index.ANALYZED,Field.Store.NO,Field.TermVector.NO -->
+        <fieldType name="keyword" class="solr.TextField" indexed="true" stored="false" termVectors="false">
+             <analyzer type="index">
+                <tokenizer class="solr.KeywordTokenizerFactory"/>
+                <filter class="solr.LowerCaseFilterFactory"/>
+                <!--                <charFilter class="dk.statsbiblioteket.summa.common.solr.analysis.LowerCaseCharFilterFactory"/>-->
+                <charFilter class="solr.MappingCharFilterFactory" mapping="keywords_transliterations.txt"/>
+                <charFilter class="solr.MappingCharFilterFactory" mapping="default_replace_transliterations.txt"/>
+                <charFilter class="solr.MappingCharFilterFactory" mapping="void_transliterations.txt"/>
+                <charFilter class="solr.MappingCharFilterFactory" mapping="void_analyse_only_transliterations.txt"/>
+                <charFilter class="solr.MappingCharFilterFactory" mapping="blank_transliterations.txt"/>
+                <charFilter class="solr.PatternReplaceCharFilterFactory" pattern="\s+" replacement=" "/>                                
+                <filter class="solr.TrimFilterFactory"/>
+                <filter class="solr.LengthFilterFactory" min="1" max="9999999" />
+            </analyzer>
+             <analyzer type="query">
+                <tokenizer class="solr.KeywordTokenizerFactory"/>
+                <filter class="solr.LowerCaseFilterFactory"/>
+                <!--                <charFilter class="dk.statsbiblioteket.summa.common.solr.analysis.LowerCaseCharFilterFactory"/>-->
+                <charFilter class="solr.MappingCharFilterFactory" mapping="keywords_transliterations.txt"/>
+                <charFilter class="solr.MappingCharFilterFactory" mapping="default_replace_transliterations.txt"/>
+                <charFilter class="solr.MappingCharFilterFactory" mapping="void_transliterations.txt"/>
+                <charFilter class="solr.MappingCharFilterFactory" mapping="blank_transliterations.txt"/>
+                <charFilter class="solr.PatternReplaceCharFilterFactory" pattern="\s+" replacement=" "/>                                
+                <filter class="solr.TrimFilterFactory"/>
+                <filter class="solr.LengthFilterFactory" min="1" max="9999999" />
+            </analyzer>
+
+        </fieldType>
+
+        <!-- Special field for channel name to handle + in names-->
+        <fieldType name="keyword_channel" class="solr.TextField" indexed="true" stored="false" termVectors="false">
+             <analyzer type="index">
+                <tokenizer class="solr.KeywordTokenizerFactory"/>
+                <filter class="solr.LowerCaseFilterFactory"/>
+                <!--                <charFilter class="dk.statsbiblioteket.summa.common.solr.analysis.LowerCaseCharFilterFactory"/>-->
+                <charFilter class="solr.MappingCharFilterFactory" mapping="keywords_transliterations.txt"/>
+                <charFilter class="solr.MappingCharFilterFactory" mapping="default_replace_transliterations.txt"/>
+                <charFilter class="solr.MappingCharFilterFactory" mapping="void_transliterations.txt"/>
+                <charFilter class="solr.MappingCharFilterFactory" mapping="void_analyse_only_transliterations.txt"/>
+                <charFilter class="solr.MappingCharFilterFactory" mapping="blank_transliterations_channel_name.txt"/>
+                <charFilter class="solr.PatternReplaceCharFilterFactory" pattern="\s+" replacement=" "/>                                
+                <filter class="solr.TrimFilterFactory"/>
+                <filter class="solr.LengthFilterFactory" min="1" max="9999999" />
+            </analyzer>
+             <analyzer type="query">
+                <tokenizer class="solr.KeywordTokenizerFactory"/>
+                <filter class="solr.LowerCaseFilterFactory"/>
+                <!--                <charFilter class="dk.statsbiblioteket.summa.common.solr.analysis.LowerCaseCharFilterFactory"/>-->
+                <charFilter class="solr.MappingCharFilterFactory" mapping="keywords_transliterations.txt"/>
+                <charFilter class="solr.MappingCharFilterFactory" mapping="default_replace_transliterations.txt"/>
+                <charFilter class="solr.MappingCharFilterFactory" mapping="void_transliterations.txt"/>
+                <charFilter class="solr.MappingCharFilterFactory" mapping="blank_transliterations_channel_name.txt"/>
+                <charFilter class="solr.PatternReplaceCharFilterFactory" pattern="\s+" replacement=" "/>                                
+                <filter class="solr.TrimFilterFactory"/>
+                <filter class="solr.LengthFilterFactory" min="1" max="9999999" />
+            </analyzer>
+
+        </fieldType>
+
+        <!-- Summa field: SummaStandardAnalyzer, Field.Index.ANALYZED,Field.Store.NO,Field.TermVector.WITH_POSITIONS_OFFSETS -->
+        <!-- The order of the charfilters is important. Filters further down the chain must not replace already replaced tokens -->
+        <fieldType name="text" class="solr.TextField" indexed="true" stored="false" termVectors="true">
+             <analyzer type="index">
+                <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+                <filter class="solr.LowerCaseFilterFactory"/>
+                <!--                <charFilter class="dk.statsbiblioteket.summa.common.solr.analysis.LowerCaseCharFilterFactory"/>-->
+                <charFilter class="solr.MappingCharFilterFactory" mapping="default_replace_transliterations.txt"/>
+                <charFilter class="solr.MappingCharFilterFactory" mapping="void_transliterations.txt"/>
+                <charFilter class="solr.MappingCharFilterFactory" mapping="void_analyse_only_transliterations.txt"/>
+                <charFilter class="solr.MappingCharFilterFactory" mapping="blank_transliterations.txt"/>                
+                <filter class="solr.TrimFilterFactory"/>
+                <filter class="solr.LengthFilterFactory" min="1" max="9999999" />
+            </analyzer>
+             <analyzer type="query">
+                <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+                <filter class="solr.LowerCaseFilterFactory"/>
+                <!--                <charFilter class="dk.statsbiblioteket.summa.common.solr.analysis.LowerCaseCharFilterFactory"/>-->
+                <charFilter class="solr.MappingCharFilterFactory" mapping="default_replace_transliterations.txt"/>
+                <charFilter class="solr.MappingCharFilterFactory" mapping="void_transliterations.txt"/>
+                <charFilter class="solr.MappingCharFilterFactory" mapping="blank_transliterations.txt"/>
+                <filter class="solr.TrimFilterFactory"/>
+                <filter class="solr.LengthFilterFactory" min="1" max="9999999" />
+            </analyzer>
+
+        </fieldType>
+
+        <!-- Special handling of channel -->
+        <fieldType name="text_channel" class="solr.TextField" indexed="true" stored="false" termVectors="true">
+             <analyzer type="index">
+                <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+                <filter class="solr.LowerCaseFilterFactory"/>
+                <!--                <charFilter class="dk.statsbiblioteket.summa.common.solr.analysis.LowerCaseCharFilterFactory"/>-->
+                <charFilter class="solr.MappingCharFilterFactory" mapping="default_replace_transliterations.txt"/>
+                <charFilter class="solr.MappingCharFilterFactory" mapping="void_transliterations.txt"/>
+                <charFilter class="solr.MappingCharFilterFactory" mapping="void_analyse_only_transliterations.txt"/>
+                <charFilter class="solr.MappingCharFilterFactory" mapping="blank_transliterations_channel_name.txt"/>
+                <filter class="solr.TrimFilterFactory"/>
+                <filter class="solr.LengthFilterFactory" min="1" max="9999999" />
+            </analyzer>
+             <analyzer type="query">
+                <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+                <filter class="solr.LowerCaseFilterFactory"/>
+                <!--                <charFilter class="dk.statsbiblioteket.summa.common.solr.analysis.LowerCaseCharFilterFactory"/>-->
+                <charFilter class="solr.MappingCharFilterFactory" mapping="default_replace_transliterations.txt"/>
+                <charFilter class="solr.MappingCharFilterFactory" mapping="void_transliterations.txt"/>
+                <charFilter class="solr.MappingCharFilterFactory" mapping="blank_transliterations_channel_name.txt"/>
+                <filter class="solr.TrimFilterFactory"/>
+                <filter class="solr.LengthFilterFactory" min="1" max="9999999" />
+            </analyzer>
+        </fieldType>
+
+        <!-- Summa field: FreeTextAnalyzer, Field.Index.ANALYZED,Field.Store.NO,Field.TermVector.WITH_POSITIONS_OFFSETS -->
+        <!-- The order of the charfilters is important. Filters further down the chain must not replace already replaced tokens -->
+        <fieldType name="freetext" class="solr.TextField" indexed="true" stored="false" termVectors="true">
+             <analyzer type="index">
+                <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+                <filter class="solr.LowerCaseFilterFactory"/>
+                <!--                <charFilter class="dk.statsbiblioteket.summa.common.solr.analysis.LowerCaseCharFilterFactory"/>-->
+                <charFilter class="solr.MappingCharFilterFactory" mapping="default_replace_transliterations.txt"/>
+                <charFilter class="solr.MappingCharFilterFactory" mapping="relaxed_replace_transliterations.txt"/>
+                <charFilter class="solr.MappingCharFilterFactory" mapping="character_transliterations.txt"/>
+                <charFilter class="solr.MappingCharFilterFactory" mapping="void_transliterations.txt"/>
+                <charFilter class="solr.MappingCharFilterFactory" mapping="void_analyse_only_transliterations.txt"/>
+                <charFilter class="solr.MappingCharFilterFactory" mapping="blank_transliterations.txt"/>
+                <filter class="solr.TrimFilterFactory"/>
+                <filter class="solr.LengthFilterFactory" min="1" max="9999999" />
+            </analyzer>
+             <analyzer type="query">
+                <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+                <filter class="solr.LowerCaseFilterFactory"/>
+                <!--                <charFilter class="dk.statsbiblioteket.summa.common.solr.analysis.LowerCaseCharFilterFactory"/>-->
+                <charFilter class="solr.MappingCharFilterFactory" mapping="default_replace_transliterations.txt"/>
+                <charFilter class="solr.MappingCharFilterFactory" mapping="relaxed_replace_transliterations.txt"/>
+                <charFilter class="solr.MappingCharFilterFactory" mapping="character_transliterations.txt"/>
+                <charFilter class="solr.MappingCharFilterFactory" mapping="void_transliterations.txt"/>
+                <charFilter class="solr.MappingCharFilterFactory" mapping="blank_transliterations.txt"/>                
+                <filter class="solr.TrimFilterFactory"/>
+                <filter class="solr.LengthFilterFactory" min="1" max="9999999" />
+            </analyzer>
+        </fieldType>
+
+
+        <!-- Summa field: SummaStandardAnalyzer, Field.Index.NO,Field.Store.YES,Field.TermVector.NO -->
+        <!-- The order of the charfilters is important. Filters further down the chain must not replace already replaced tokens -->
+        <fieldType name="stored" class="solr.TextField" indexed="false" stored="true" termVectors="false">
+             <analyzer type="index">
+                <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+                <filter class="solr.LowerCaseFilterFactory"/>
+                <!--                <charFilter class="dk.statsbiblioteket.summa.common.solr.analysis.LowerCaseCharFilterFactory"/>-->
+                <charFilter class="solr.MappingCharFilterFactory" mapping="default_replace_transliterations.txt"/>
+                <charFilter class="solr.MappingCharFilterFactory" mapping="void_transliterations.txt"/>
+                <charFilter class="solr.MappingCharFilterFactory" mapping="void_analyse_only_transliterations.txt"/>
+                <charFilter class="solr.MappingCharFilterFactory" mapping="blank_transliterations.txt"/>
+                <filter class="solr.TrimFilterFactory"/>
+                <filter class="solr.LengthFilterFactory" min="1" max="9999999" />
+            </analyzer>
+             <analyzer type="query">
+                <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+                <filter class="solr.LowerCaseFilterFactory"/>
+                <!--                <charFilter class="dk.statsbiblioteket.summa.common.solr.analysis.LowerCaseCharFilterFactory"/>-->
+                <charFilter class="solr.MappingCharFilterFactory" mapping="default_replace_transliterations.txt"/>
+                <charFilter class="solr.MappingCharFilterFactory" mapping="void_transliterations.txt"/>
+                <charFilter class="solr.MappingCharFilterFactory" mapping="blank_transliterations.txt"/>                
+                <filter class="solr.TrimFilterFactory"/>
+                <filter class="solr.LengthFilterFactory" min="1" max="9999999" />
+            </analyzer>
+
+        </fieldType>
+
+        <!-- Summa field: SummaNumberAnalyzer, Field.Index.ANALYZED,Field.Store.YES,Field.TermVector.NO -->
+        <!-- LowerCaseFilter added for SOLR-->
+        <fieldType name="number" class="solr.TextField" indexed="true" stored="true" termVectors="false">
+            <analyzer>
+                <tokenizer class="solr.KeywordTokenizerFactory"/>
+                <filter class="solr.LowerCaseFilterFactory"/>
+                <!--                <charFilter class="dk.statsbiblioteket.summa.common.solr.analysis.LowerCaseCharFilterFactory"/>-->
+                <charFilter class="solr.MappingCharFilterFactory" mapping="number_transliterations.txt"/>
+                <filter class="solr.TrimFilterFactory"/>
+                <filter class="solr.LengthFilterFactory" min="1" max="9999999" />
+            </analyzer>
+        </fieldType>
+
+        <fieldType name="lowercase" class="solr.TextField" positionIncrementGap="100">
+            <analyzer>
+                <tokenizer class="solr.KeywordTokenizerFactory"/>
+                <filter class="solr.LowerCaseFilterFactory"/>
+                <!--                <charFilter class="dk.statsbiblioteket.summa.common.solr.analysis.LowerCaseCharFilterFactory"/>-->
+                <filter class="solr.TrimFilterFactory"/>
+                <filter class="solr.LengthFilterFactory" min="1" max="9999999" />
+            </analyzer>
+        </fieldType>
+
+        <fieldType name="text_path" class="solr.TextField" positionIncrementGap="100">
+            <analyzer>
+                <tokenizer class="solr.PathHierarchyTokenizerFactory"/>
+                <filter class="solr.LowerCaseFilterFactory"/>
+                <!--                <charFilter class="dk.statsbiblioteket.summa.common.solr.analysis.LowerCaseCharFilterFactory"/>-->
+                <filter class="solr.TrimFilterFactory"/>
+                <filter class="solr.LengthFilterFactory" min="1" max="9999999" />
+            </analyzer>
+        </fieldType>
+
+        <!-- Danish -->
+        <fieldType name="text_da" class="solr.TextField" positionIncrementGap="100">
+            <analyzer>
+                <tokenizer class="solr.StandardTokenizerFactory"/>
+                <filter class="solr.LowerCaseFilterFactory"/>
+                <!--                <charFilter class="dk.statsbiblioteket.summa.common.solr.analysis.LowerCaseCharFilterFactory"/>-->
+<!--                <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_da.txt" format="snowball" enablePositionIncrements="true"/>-->
+                <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_da.txt" format="snowball" />
+                <filter class="solr.SnowballPorterFilterFactory" language="Danish"/>
+                <filter class="solr.TrimFilterFactory"/>
+                <filter class="solr.LengthFilterFactory" min="1" max="9999999" />
+            </analyzer>
+        </fieldType>
+
+	<!-- Used for date boosting. Precision is hour -->
+        <fieldType name="bdate" class="solr.TrieDateField" omitNorms="true" precisionStep="6" positionIncrementGap="0"/>
+
+	<!-- Used for date range faceting and sorting. Precision should be evaluated at some point -->
+        <fieldType name="tsdate" class="solr.TrieDateField" omitNorms="true" precisionStep="6" positionIncrementGap="0"/>
+        <!-- Temporary fix while we wait for proper input -->
+<!--        <fieldType name="tsdate" class="solr.StrField" indexed="true" stored="true" multiValued="false" termVectors="false"/>-->
+    </types>
+
+    <fields>
+        <!-- Valid attributes for fields:
+          name: mandatory - the name for the field
+          type: mandatory - the name of a previously defined type from the
+            <types> section
+          indexed: true if this field should be indexed (searchable or sortable)
+          stored: true if this field should be retrievable
+          multiValued: true if this field may contain multiple values per document
+          omitNorms: (expert) set to true to omit the norms associated with
+            this field (this disables length normalization and index-time
+            boosting for the field, and saves some memory).  Only full-text
+            fields or fields that need an index-time boost need norms.
+            Norms are omitted for primitive (non-analyzed) types by default.
+          termVectors: [false] set to true to store the term vector for a
+            given field.
+            When using MoreLikeThis, fields used for similarity should be
+            stored for best performance.
+          termPositions: Store position information with the term vector.
+            This will increase storage costs.
+          termOffsets: Store offset information with the term vector. This
+            will increase storage costs.
+          required: The field is required.  It will throw an error if the
+            value does not exist
+          default: a value that should be used if no value is specified
+            when adding a document.
+        -->
+
+        <!-- Intended for testing highlighting and similar text retrieval -->
+        <field name="fulltext" type="text"  multiValued="true" stored="true"/>
+
+        <!-- Subtitles -->
+        <field name="srt" type="text"  multiValued="true" stored="true"/>
+
+        <!-- begin converted from sb_index_descriptor -->
+
+        <!-- Fix of SOLR3422 -->
+        <field name="_version_" type="long" indexed="true" stored="true"/>
+
+        <field name="recordID" type="key"/>
+        <field name="authID" type="key" multiValued="true"/> <!-- Used to control access to Mediestream material -->
+        <field name="recordBase" type="key"/>
+
+        <!-- DOMS newspapers specific -->
+        <field name="newspaper_section" type="text" stored="true" multiValued="true"/>
+        <field name="newspaper_edition" type="text" stored="true" multiValued="true"/>
+        <field name="newspaper_page_sort" type="verbatim" stored="true" multiValued="false"/> <!-- The XSLT is responsible for proper alpha-sort -->
+        <!-- OCR Predicted Word Accuracy -->
+        <field name="pwa" type="trie_float" multiValued="false"/>
+        <field name="pwa_sort" type="verbatim" stored="true" multiValued="false"/>
+        <!-- OCR Character Error Ratio -->
+        <field name="cer" type="trie_float" multiValued="false"/>
+        <field name="cer_sort" type="verbatim" stored="true" multiValued="false"/>
+        <field name="page_segment" type="text" stored="true" multiValued="true"/>
+        <field name="editionId"   type="keyword"  multiValued="false" stored="true"/>
+        <!-- Authoritative ID for the edition, taken unmodified from the DOMS record -->
+        <field name="editionUUID"   type="keyword"  multiValued="false" stored="true" required="false"/>
+        <!-- Authoritative ID for the page, taken unmodified from the DOMS record -->
+        <field name="pageUUID"   type="keyword"  multiValued="false" stored="true" required="false"/>
+        <field name="titleUUID"   type="keyword"  multiValued="false" stored="true" required="false"/>
+        <field name="modsExist"   type="keyword"  multiValued="false" stored="true" required="false"/>
+
+        <field name="familyId"   type="keyword"  multiValued="false" stored="true"/>
+        <field name="ddaId"   type="keyword"  multiValued="false" stored="true"/>
+        <!-- Boxes marking the article spatially -->
+        <field name="alto_box" type="verbatim" stored="true" multiValued="true"/>
+
+        <!-- Used for resource lookup -->
+        <field name="thumbnailID"   type="keyword"  multiValued="false" stored="true" required="false"/>
+        <!-- Resources that are no longer active (normally old presentation resources).
+             Used to generate reports to CopyDan. -->
+        <field name="inactiveResourceID"   type="keyword"  multiValued="true" stored="true" required="false"/>
+
+        <!-- Gruppe enrich -->
+        <field name="enrich_editor" type="text"  multiValued="true"/>
+        <field name="enrich_isbn" type="number" multiValued="true"/>
+        <field name="enrich_publisher" type="text"  multiValued="true"/>
+        <field name="enrich_publishdate" type="number" multiValued="true"/>
+        <field name="enrich_title" type="text"  multiValued="true"/>
+        <field name="enrich_head" type="text"  multiValued="true"/>
+        <field name="enrich_freetext" type="text"  multiValued="true"/>
+
+        <!-- Gruppe html_header-->
+        <field name="html_h1" type="text"  multiValued="true"/>
+        <field name="html_h2" type="text"  multiValued="true"/>
+        <field name="html_h3" type="text"  multiValued="true"/>
+        <field name="html_h4" type="text"  multiValued="true"/>
+        <field name="html_h5" type="text"  multiValued="true"/>
+        <field name="html_h6" type="text"  multiValued="true"/>
+        <field name="html_content" type="text"  multiValued="true"/>
+        <field name="freetext" type="freetext"  multiValued="true"/>
+        <field name="title_org" type="text"  multiValued="true"/>
+        <field name="title_norm" type="freetext"  multiValued="true"/>
+        <field name="se" type="text"  multiValued="true"/>
+        <!--artikelbasen - praksisregler -->
+        <field name="aj" type="text"  multiValued="true"/>
+        <!--artikelbasen - praksisregler -->
+        <field name="km" type="text"  multiValued="true"/>
+        <!--artikelbasen - praksisregler -->
+        <field name="nm" type="text"  multiValued="true"/>
+        <!--artikelbasen - praksisregler -->
+        <field name="ts" type="text"  multiValued="true"/>
+        <!--artikelbasen - praksisregler -->
+        <field name="bs" type="text"  multiValued="true"/>
+        <!--artikelbasen - praksisregler; DPB -->
+        <field name="fg" type="text"  multiValued="true"/>
+        <!--artikelbasen - praksisregler -->
+        <field name="ix" type="text"  multiValued="true"/>
+        <!--artikelbasen - praksisregler -->
+        <field name="ka" type="text"  multiValued="true"/>
+        <!--artikelbasen - praksisregler -->
+        <field name="kg" type="text"  multiValued="true"/>
+        <!--artikelbasen - praksisregler -->
+        <field name="kk" type="text"  multiValued="true"/>
+        <!--artikelbasen - praksisregler -->
+        <field name="sf" type="text"  multiValued="true"/>
+        <!--artikelbasen - praksisregler -->
+        <field name="lmo" type="keyword" multiValued="true"/>
+        <!--artikelbasen - praksisregler -->
+        <field name="lvx" type="keyword" multiValued="true"/>
+        <field name="lvx_facet" type="verbatim" multiValued="true"/>
+        <!--artikelbasen - praksisregler -->
+        <field name="vp" type="text"  multiValued="true"/>
+        <!--Hvorfor har vi defineret dette felt "text"= SOlr fejler hvis det ikke er her-->
+        <field name="text" type="text" multiValued="true"/>
+        <field name="main_title_org" type="text"  multiValued="true"/>
+        <field name="main_title_norm" type="freetext"  multiValued="true"/>
+        <field name="peri" type="text"  multiValued="true"/>
+        <field name="lti" type="keyword"  multiValued="true"/>
+        <field name="lperi" type="keyword"  multiValued="true"/>
+        <field name="class_other" type="text"  multiValued="true"/>
+        <field name="ddc_kw" type="text"  multiValued="true"/>
+        <field name="dk" type="text"  multiValued="true"/>
+        <field name="inst" type="text"  multiValued="true"/>
+        <field name="kl" type="text"  multiValued="true"/>
+        <field name="lcc_kw" type="text"  multiValued="true"/>
+        <field name="nlm_kw" type="text"  multiValued="true"/>
+        <field name="author_main_org" type="text"  multiValued="true"/>
+        <field name="author_main_norm" type="freetext"  multiValued="true"/>
+        <field name="author_person_org" type="text"  multiValued="true"/>
+        <field name="author_person_norm" type="freetext"  multiValued="true"/>
+        <field name="au_other_org" type="text"  multiValued="true"/>
+        <field name="au_other_norm" type="freetext"  multiValued="true"/>
+        <field name="author_corporation_org" type="text"  multiValued="true"/>
+        <field name="author_corporation_norm" type="freetext"  multiValued="true"/>
+        <field name="lma_long" type="keyword"  multiValued="true"/>
+
+        <!-- TODO: This field was introduced by cms but not defined -->
+        <field name="ht" type="text"  multiValued="true"/>
+
+        <!-- TODO: This alias for lma_short is used by cms.
+   Remove it when the XSLT's has been corrected
+   to use the real field -->
+        <field name="lma" type="keyword"  multiValued="true"/>
+        <field name="ma_short" type="text"  multiValued="true"/>
+
+        <!-- Used for faceting in aviser -->
+        <field name="lplace" type="verbatim"  multiValued="true"/>
+
+        <!-- TODO: This alias for ma_short is used by cms.
+   Remove it when the XSLT's has been corrected
+   to use the real field -->
+        <field name="ma_kort" type="text"  multiValued="true"/>
+        <field name="isbn" type="number"  multiValued="true"/>
+        <field name="issn" type="number"  multiValued="true"/>
+        <field name="number" type="text" multiValued="true"/>
+        <field name="standard_number" type="number" multiValued="true"/>
+        <field name="id" type="number" multiValued="true"/>
+        <field name="fmbl" type="number" multiValued="true"/>
+        <field name="fubl" type="number" multiValued="true"/>
+        <field name="mesh" type="keyword" multiValued="true"/>
+        <field name="su_corp" type="keyword"  multiValued="true"/>
+        <field name="su_lc" type="keyword"  multiValued="true"/>
+        <field name="su_pe" type="keyword" multiValued="true" />
+        <field name="lsu_ser_sol" type="keyword"  multiValued="true" />
+        <field name="lsu_ulrichs" type="keyword"  multiValued="true"/>
+        <field name="lsu_ulrichs_hier" type="keyword"  multiValued="true"/>
+        <field name="su_dk" type="keyword"  multiValued="true"/>
+        <field name="led" type="keyword" multiValued="true"/>
+        <field name="lsu_oai" type="keyword"  multiValued="true"/>
+        <field name="lsubject" type="keyword"  multiValued="true"/>
+        <field name="lhovedgenre" type="keyword"  multiValued="true"/>
+        <field name="subject_dk5" type="text"  multiValued="true"/>
+        <field name="subject_serial_solutions" type="text"  multiValued="true"/>
+        <field name="subject_ulrichs" type="text"  multiValued="true"/>
+        <field name="subject_controlled" type="text"  multiValued="true"/>
+        <field name="subject_other_org" type="text"  multiValued="true"/>
+        <field name="subject_other_norm" type="freetext"  multiValued="true"/>
+        <field name="lcl_csa" type="keyword"  multiValued="true"/>
+        <field name="lddc" type="keyword" multiValued="true" />
+        <field name="lcl_all" type="keyword"  multiValued="true"/>
+        <field name="ldbk" type="keyword" multiValued="true" />
+        <field name="ldk5" type="keyword"  multiValued="true"/>
+        <field name="lfn" type="keyword" multiValued="true"/>
+        <field name="linst" type="keyword" multiValued="true" />
+        <field name="lkl" type="keyword" multiValued="true"/>
+        <field name="llcc" type="keyword" multiValued="true"/>
+        <field name="lnlm" type="keyword" multiValued="true"/>
+        <field name="ludk" type="keyword" multiValued="true"/>
+        <field name="cluster" type="keyword" />
+        <field name="lso" type="keyword" multiValued="true"/>
+        <field name="author_descr" type="text"  multiValued="true"/>
+        <field name="barcode" type="text"  multiValued="true"/>
+        <field name="barcode_normalised" type="keyword"  multiValued="true"/>
+        <field name="call" type="text" multiValued="true"/>
+        <field name="collection" type="text"  multiValued="true"/>
+        <field name="collection_normalised" type="keyword"  multiValued="true"/>
+        <field name="country" type="text"  multiValued="true"/>
+        <field name="nv" type="text"  multiValued="true"/>
+        <field name="item_status" type="text" multiValued="true"/>
+        <field name="itype" type="text" multiValued="true"/>
+        <field name="item_mat" type="text"  multiValued="true"/>
+        <field name="l_call" type="keyword" multiValued="true"/>
+        <field name="location" type="text"  multiValued="true"/>
+        <field name="location_normalised" type="keyword"  multiValued="true"/>
+        <field name="ma_long" type="text"  multiValued="true"/>
+        <field name="op" type="text" />
+        <field name="original_language" type="text"  multiValued="true"/>
+        <field name="other" type="text"  multiValued="true"/>
+        <field name="place" type="text"  multiValued="true"/>
+        <field name="series_normalised" type="keyword" multiValued="true"/>
+        <field name="ww" type="text"  multiValued="true"/>
+        <field name="ip" type="text"  multiValued="true"/>
+        <field name="lip" type="keyword"  multiValued="true"/>
+        <field name="commercials_subject" type="keyword"  multiValued="true"/>
+        <field name="author_normalised" type="keyword"  multiValued="true"/>
+        <field name="llfo" type="keyword"  multiValued="true"/>
+        <field name="format" type="text"  multiValued="true"/>
+        <field name="lang" type="text"  multiValued="true"/>
+        <field name="llang" type="keyword"  multiValued="true"/>
+        <field name="no" type="text"  multiValued="true"/>
+        <field name="openUrl" type="stored" multiValued="true"/>
+        <field name="publ" type="text"  multiValued="true"/>
+        <field name="py" type="text"  multiValued="true"/>
+        <field name="rt" type="text"  multiValued="true"/>
+        <field name="shortformat" type="stored"/>
+        <field name="sort_title" type="keyword_sorted" />
+        <field name="sort_year_asc" type="keyword" stored="true" />
+        <field name="sort_year_desc" type="keyword" stored="true" />
+        <field name="year" type="number" multiValued="true"/>
+        <field name="ava" type="keyword"  multiValued="true"/>
+        <!--felt til feltkode, indikatorer og delfeltkode for hvert delfelt i posten-->
+        <field name="tag" type="keyword"  multiValued="true"/>
+        <!--felt til tidsskriftstatus som den fremgår af delfelt s i 980 i hol-posten -->
+        <field name="tss_status" type="text"  multiValued="true"/>
+        <!--felt til own-koden som den fremgår af felt OWN i hol-posten -->
+        <field name="own" type="text"  multiValued="true"/>
+        <!--felt til nyhedslister - ugenummer i felt 099 i hol-posten-->
+        <field name="new" type="keyword"  multiValued="true"/>
+        <!-- Radio-tv. Only fields of type verbatim -->
+        <field name="season_id" type="verbatim"/>
+        <field name="iso_date" type="verbatim"/>
+        <field name="iso_time" type="verbatim"/>
+        <field name="iso_dateTime" type="verbatim" stored="true"/>
+
+        <!-- Detailed coverage (start and end timestamps) information -->
+        <field name="coverage_start_full" type="tsdate" indexed="true" stored="false" docValues="true" />
+        <field name="coverage_end_full" type="tsdate" indexed="true" stored="false" docValues="true" />
+        <field name="coverage_start_time" type="tsdate" indexed="true" stored="false" docValues="true" />
+        <field name="coverage_end_time" type="tsdate" indexed="true" stored="false" docValues="true" />
+        <field name="coverage_start_month" type="tsdate" indexed="true" stored="false" docValues="true" />
+        <field name="coverage_end_month" type="tsdate" indexed="true" stored="false" docValues="true" />
+        <field name="coverage_start_weekday" type="verbatim" indexed="true" stored="false" docValues="true" multiValued="false" />
+        <field name="coverage_end_weekday" type="verbatim" indexed="true" stored="false" docValues="true" multiValued="false" />
+        <field name="coverage_start_yearweek" type="int" indexed="true" stored="false" docValues="true" multiValued="false" />
+        <field name="coverage_end_yearweek" type="int" indexed="true" stored="false" docValues="true" multiValued="false" />
+
+        <!-- empty or 'missing' -->
+        <field name="coverage_note" type="verbatim" indexed="true" stored="false" docValues="true" />
+
+        
+        <!-- Creation, Modified and Index-time -->
+        <field name="ctime" type="tsdate" indexed="true" stored="false" required="false" docValues="true" />
+        <field name="mtime" type="tsdate" indexed="true" stored="false" required="false" docValues="true" />
+        <field name="itime" type="tsdate" indexed="true" stored="false" required="false" docValues="true" />
+        <!-- source time (timestamp embedded in source data) -->
+        <field name="stime" type="tsdate" indexed="true" stored="false" required="false" docValues="true" />
+
+        <field name="availability" type="keyword"/>
+        <field name="saeson_id" type="verbatim"/>
+        <field name="channel_name" type="keyword_channel"/>
+        <field name="channel_name_facet" type="keyword_channel"/>
+        <field name="commercial_type_facet" type="keyword"/>
+        <field name="channel_name_human" type="text_channel" multiValued="true"/>
+        <field name="author_other" type="text" multiValued="true"/>
+        <field name="handle" type="text" multiValued="true"/>
+        <!-- word and character statistics meant for aggregation -->
+        <field name="statBlocks" type="long" multiValued="false" stored="true" required="false"/>
+        <field name="statWords" type="long" multiValued="false" stored="true" required="false"/>
+        <field name="statChars" type="long" multiValued="false" stored="true" required="false"/>
+        <field name="statLowercase" type="long" multiValued="false" stored="true" required="false"/>
+        <field name="statUppercase" type="long" multiValued="false" stored="true" required="false"/>
+        <field name="statLetters" type="long" multiValued="false" stored="true" required="false"/>
+        <field name="statDigits" type="long" multiValued="false" stored="true" required="false"/>
+        <field name="statStopchars" type="long" multiValued="false" stored="true" required="false"/>
+        <field name="statCommas" type="long" multiValued="false" stored="true" required="false"/>
+
+        <field name="work1" type="keyword" /> <!--første alternativ til værkvisning -->
+        <field name="work2" type="keyword" /> <!--andet alternativ til værkvisning -->
+        <field name="work3" type="keyword" /> <!--tredje alternativ til værkvisning -->
+
+        <!--For DidYouMean -->
+        <field name="summa_spell" type="textSpell"/>
+
+        <!-- DOMS-specific -->
+        <field name="individuelt_forbud" type="keyword" multiValued="false"/>
+        <field name="klausuleret" type="keyword" multiValued="false"/>
+        <field name="defekt" type="keyword" multiValued="false"/> <!-- Should always be 'Nej' -->
+
+        <!-- end converted from sb_index_descriptor -->
+
+       <!-- Boosting most recent -->
+       <field name="boostdate" type="bdate" indexed="true" stored="true" required="false" />
+
+       <field name="PID" type="verbatim" indexed="true" stored="true" multiValued="false" />
+
+       <!-- Best effort (highest precision available) timestamp for the resource described in the document.
+            For radio/TV this would be airing date and time. For newspapers this would probably be the date. -->
+       <field name="timestamp" type="tsdate" indexed="true" stored="true" required="false" />
+    </fields>
+     <!-- Two fields for indexing data from tv-meter about types and form -->
+    <field name="tvm_contentsitem" type="text" multiValued="true" stored="true"/>
+    <field name="tvm_form" type="text" multiValued="true" stored="true"/>
+
+    <!-- Field to use to determine and enforce document uniqueness.
+       Unless this field is marked with required="false", it will be a required field
+    -->
+    <uniqueKey>recordID</uniqueKey>
+
+
+    <!-- SolrQueryParser configuration: defaultOperator="AND|OR". Will be depricated. Define (q.op=AND) for each searchhandler in solrconf.xml instead-->
+    <solrQueryParser defaultOperator="AND"/>
+
+    <!-- There is no conceptual editionId in DOMS, but we need it for grouping.
+         By assigning the document-unique recordID to the field, we get one 
+         individual group per document.  -->
+    <copyField source="recordID" dest="editionId"/>
+    <!-- recordID is the only authentication indicator in the doms site -->
+    <copyField source="recordID" dest="authID"/>
+    <copyField source="recordID" dest="editionUUID"/>
+    <copyField source="recordID" dest="titleUUID"/>
+    <copyField source="recordID" dest="pageUUID"/>
+
+    <copyField source="iso_dateTime" dest="timestamp"/>
+    <!--Freetext,inFreeText="true"  from summa-->
+    <copyField source="html_h1" dest="freetext"/>
+    <copyField source="html_h2" dest="freetext"/>
+    <copyField source="html_h3" dest="freetext"/>
+    <copyField source="html_h4" dest="freetext"/>
+    <copyField source="html_h5" dest="freetext"/>
+    <copyField source="html_h6" dest="freetext"/>
+    <copyField source="html_content" dest="freetext"/>
+    <copyField source="title_org" dest="title_norm"/>
+    <copyField source="se" dest="freetext"/>
+    <copyField source="lmo" dest="freetext"/>
+    <copyField source="lvx" dest="freetext"/>
+    <copyField source="lvx" dest="lvx_facet"/>
+    <copyField source="vp" dest="freetext"/>
+    <copyField source="main_title_org" dest="main_title_norm"/>
+    <copyField source="lti" dest="freetext"/>
+    <copyField source="lperi" dest="freetext"/>
+    <copyField source="class_other" dest="freetext"/>
+    <copyField source="ddc_kw" dest="freetext"/>
+    <copyField source="dk" dest="freetext"/>
+    <copyField source="inst" dest="freetext"/>
+    <copyField source="kl" dest="freetext"/>
+    <copyField source="lcc_kw" dest="freetext"/>
+    <copyField source="nlm_kw" dest="freetext"/>
+    <copyField source="author_main_org" dest="freetext"/>
+    <copyField source="author_person_org" dest="author_person_norm"/>
+    <copyField source="au_other_org" dest="au_other_norm"/>
+    <copyField source="author_corporation_org" dest="author_corporation_norm"/>
+    <copyField source="lma_long" dest="freetext"/>
+    <copyField source="ma_short" dest="freetext"/>
+    <copyField source="isbn" dest="freetext"/>
+    <copyField source="issn" dest="freetext"/>
+    <copyField source="number" dest="freetext"/>
+    <copyField source="standard_number" dest="freetext"/>
+    <copyField source="id" dest="freetext"/>
+    <copyField source="ww" dest="freetext"/>
+    <copyField source="fmbl" dest="freetext"/>
+    <copyField source="fubl" dest="freetext"/>
+    <copyField source="mesh" dest="freetext" />
+    <copyField source="su_corp" dest="freetext"/>
+    <copyField source="su_lc" dest="freetext"/>
+    <copyField source="su_pe" dest="freetext"/>
+    <copyField source="lsu_ser_sol" dest="freetext"/>
+    <copyField source="lsu_ulrichs" dest="freetext"/>
+    <copyField source="lsu_ulrichs_hier" dest="freetext"/>
+    <copyField source="su_dk" dest="freetext"/>
+    <copyField source="led" dest="freetext"/>
+    <copyField source="lsu_oai" dest="freetext"/>
+    <copyField source="lsubject" dest="freetext"/>
+    <copyField source="subject_dk5" dest="freetext"/>
+    <copyField source="subject_serial_solutions" dest="freetext"/>
+    <copyField source="subject_ulrichs" dest="freetext"/>
+    <copyField source="subject_controlled" dest="freetext"/>
+    <copyField source="subject_other_org" dest="subject_other_norm"/>
+    <copyField source="lcl_csa" dest="freetext"/>
+    <copyField source="lddc" dest="freetext"/>
+    <copyField source="lcl_all" dest="freetext"/>
+    <copyField source="ldbk" dest="freetext"/>
+    <copyField source="ldk5" dest="freetext"/>
+    <copyField source="lfn" dest="freetext"/>
+    <copyField source="linst" dest="freetext"/>
+    <copyField source="lkl" dest="freetext"/>
+    <copyField source="llcc" dest="freetext"/>
+    <copyField source="lnlm" dest="freetext"/>
+    <copyField source="ludk" dest="freetext"/>
+    <copyField source="lso" dest="freetext"/>
+    <copyField source="author_descr" dest="freetext"/>
+    <copyField source="barcode" dest="freetext"/>
+    <copyField source="barcode_normalised" dest="freetext"/>
+    <copyField source="call" dest="freetext"/>
+    <copyField source="collection_normalised" dest="freetext"/>
+    <copyField source="country" dest="freetext"/>
+    <copyField source="nv" dest="freetext"/>
+    <copyField source="item_status" dest="freetext"/>
+    <copyField source="itype" dest="freetext"/>
+    <copyField source="item_mat" dest="freetext"/>
+    <copyField source="l_call" dest="freetext"/>
+    <copyField source="location_normalised" dest="freetext"/>
+    <copyField source="ma_long" dest="freetext"/>
+    <copyField source="original_language" dest="freetext"/>
+    <copyField source="other" dest="freetext"/>
+    <copyField source="place" dest="freetext"/>
+    <copyField source="series_normalised" dest="freetext"/>
+    <copyField source="ww" dest="freetext"/>
+    <copyField source="ip" dest="freetext"/>
+    <copyField source="lip" dest="freetext"/>
+    <copyField source="commercials_subject" dest="freetext"/>
+    <copyField source="author_normalised" dest="freetext"/>
+    <copyField source="llfo" dest="freetext"/>
+    <copyField source="format" dest="freetext"/>
+    <copyField source="lang" dest="freetext"/>
+    <copyField source="llang" dest="freetext"/>
+    <copyField source="no" dest="freetext"/>
+    <copyField source="publ" dest="freetext"/>
+    <copyField source="py" dest="freetext"/>
+    <copyField source="rt" dest="freetext"/>
+    <copyField source="sort_title" dest="freetext"/>
+    <copyField source="sort_year_asc" dest="freetext"/>
+    <copyField source="sort_year_desc" dest="freetext"/>
+    <copyField source="year" dest="freetext"/>
+    <copyField source="channel_name_human" dest="freetext"/>
+    <copyField source="author_other" dest="freetext"/>
+
+    <!--For DidYouMean -->
+    <copyField source="*" dest="summa_spell"/>
+
+</schema>

@@ -1,0 +1,41 @@
+{
+  "recordID": "pvica_radioTV:du:c7e7a040-a1e2-4d38-b136-ddbef68307e5",
+  "editionId": "pvica_radioTV:du:c7e7a040-a1e2-4d38-b136-ddbef68307e5",
+  "authID": [
+    "pvica_radioTV:du:c7e7a040-a1e2-4d38-b136-ddbef68307e5",
+    "pvica_radioTV:du:c7e7a040-a1e2-4d38-b136-ddbef68307e5",
+    "75920cb3-30d8-4bd3-ba9d-11eee64fb162"
+  ],
+  "editionUUID": "pvica_radioTV:du:c7e7a040-a1e2-4d38-b136-ddbef68307e5",
+  "titleUUID": "pvica_radioTV:du:c7e7a040-a1e2-4d38-b136-ddbef68307e5",
+  "pageUUID": "pvica_radioTV:du:c7e7a040-a1e2-4d38-b136-ddbef68307e5",
+  "recordBase": "pvica_radioTV",
+  "shortformat": "<shortrecord>\n            <shortRecordDescription/>\n            <shortRecordShortDescription/>\n            <rdf:RDF>\n               <rdf:Description>\n                  <dc:title>Radioavisen</dc:title>\n                  <dc:creator/>\n                  <dc:date>2018</dc:date>\n                  <dc:dateTime>5. April 2018 kl. 12:00</dc:dateTime>\n                  <dc:dateTimeIso>2018-04-05T12:00:00Z</dc:dateTimeIso>\n                  <dc:type xml:lang=\"da\">Radio</dc:type>\n                  <dc:type xml:lang=\"en\">Radio</dc:type>\n                  <dc:identifier>du:c7e7a040-a1e2-4d38-b136-ddbef68307e5</dc:identifier>\n                  <channelname>drp1</channelname>\n                  <channelnameHuman>DR P1</channelnameHuman>\n                  <episode/>\n                  <totalEpisodes>0</totalEpisodes>\n                  <fileRef>75920cb3-30d8-4bd3-ba9d-11eee64fb162</fileRef>\n               </rdf:Description>\n            </rdf:RDF>\n         </shortrecord>",
+  "sort_title": "Radioavisen",
+  "year": [
+    "2018"
+  ],
+  "iso_dateTime": [
+    "2018-04-05T12:00:00Z"
+  ],
+  "timestamp": "2018-04-05T12:00:00Z",
+  "sort_year_desc": "2018",
+  "sort_year_asc": "2018",
+  "boostdate": "2018-04-05T12:00:00Z",
+  "_version_": 1677809872000778200,
+  "coverage_start_time": "0000-01-01T12:00:00Z",
+  "stime": "2018-07-31T21:46:40Z",
+  "coverage_start_month": "0000-04-05T12:00:00Z",
+  "itime": "2020-09-14T13:49:42.506Z",
+  "mtime": "2018-08-01T10:12:07.242Z",
+  "coverage_end_time": "0000-01-01T12:15:00Z",
+  "coverage_end_weekday": "Thursday",
+  "coverage_start_weekday": "Thursday",
+  "coverage_end_full": "2018-04-05T12:15:00Z",
+  "coverage_end_month": "0000-04-05T12:15:00Z",
+  "ctime": "2018-07-23T16:17:03.735Z",
+  "coverage_start_full": "2018-04-05T12:00:00Z",
+  "coverage_start_yearweek": 14,
+  "coverage_end_yearweek": 14,
+  "score": 15.873078
+}
