@@ -1,2 +1,2 @@
 #baseFolder="/data01/larm/mediestream-index-radio"
-baseFolder="/data01/larm/mediestream-index-tv"
+export baseFolder="/data01/larm/mediestream-index-tv"
