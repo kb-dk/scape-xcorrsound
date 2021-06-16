@@ -1,23 +1,25 @@
 SCRIPT_DIR=$(dirname "$(readlink -f -- ${BASH_SOURCE[0]})")
+source $SCRIPT_DIR/setenv.sh
 
 source /opt/ffmpeg43/enable
 
-ismirInput=/data01/larm/mediestream-index/ismirInput/
+ismirInput="$baseFolder/ismirInput/"
 
-rm $ismirInput/*.cleaned
+rm "$ismirInput/"*.cleaned
 
 #How to clean non-existing and broken files from ismirInput
-find "$ismirInput" -type f | \
-  xargs -r -Ifile -P36 -n1 bash -c \
+find "$ismirInput" -type f -print0 | \
+grep -z -v -F '.git/' | \
+  xargs --null -r -Ifile -P36 -n1 bash -c \
     "cat 'file' | \
       xargs -r -Iline bash -c \
-        'ffprobe 'line' &>/dev/null && echo line' > file.cleaned"
+        'ffprobe 'line' &>/dev/null && echo line' > 'file.cleaned'"
 
 #cleanup
 mkdir -p "$ismirInput/orig"
 mv "$ismirInput/"*.ismir "$ismirInput/orig/"
 for file in "$ismirInput/"*.cleaned; do
-  mv "$file" "$ismirInput/$(basename $file .cleaned)"
+  mv "$file" "$ismirInput/$(basename "$file" .cleaned)"
 done
 
 
