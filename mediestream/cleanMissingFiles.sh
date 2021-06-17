@@ -25,5 +25,5 @@ done
 
 # Observe changes from another terminal
 #cd /data01/larm/mediestream-index-tv/ismirInput/
-#for i in $(find -name '*.ismir.cleaned' -cmin +1); do [ -e "$i" ] && diff -q "$(basename "$i" .cleaned)" "$i"; done
+#for i in $(find -name '*.ismir.cleaned' -cmin +1); do [ -e "$i" ] && diff -q "$(basename "$i" .cleaned)" "$(basename "$i")"; done | sort
 #watch 'echo "scale=2;"$(wc -l *.cleaned | grep total | cut -d" " -f3)*100/$(wc -l *.ismir| grep total | cut -d" " -f3) | bc -l'
