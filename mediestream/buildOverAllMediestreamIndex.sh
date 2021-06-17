@@ -1,12 +1,13 @@
 SCRIPT_DIR=$(dirname "$(readlink -f -- ${BASH_SOURCE[0]})")
-source $SCRIPT_DIR/setenv.sh
+source "$SCRIPT_DIR/setenv.sh"
 
 export TmpSoundIndex=/dev/shm/
 
 threads=$1
 
+# shellcheck disable=SC2154
 mkdir -p "$baseFolder/index"
-q
+
 #First, we find all the crashed runs
 # We delete the index files, as we will have to recreate them from scratch
 grep -l 'Segmentation' $SCRIPT_DIR/*.log | \
