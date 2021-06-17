@@ -14,7 +14,7 @@ grep -z -v -F '.git/' | \
   xargs --null -r -Ifile -P36 -n1 bash -c \
     "cat 'file' | \
       xargs -r -Iline bash -c \
-        'ffprobe \"line\" &>/dev/null && echo \"line\"' > \"file.cleaned\""
+        'ffprobe -hide_banner \"line\" &>/dev/null && echo \"line\"' > \"file.cleaned\""
 
 #cleanup
 #mkdir -p "$ismirInput/orig"
