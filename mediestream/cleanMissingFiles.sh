@@ -9,9 +9,7 @@ ismirInput="$baseFolder/ismirInput/"
 rm "$ismirInput/"*.cleaned
 
 #How to clean non-existing and broken files from ismirInput
-find "$ismirInput" -type f -print0 | \
-grep -z -v -F '.git/' | \
-grep -v -F '/orig/' | \
+find "$ismirInput" -maxdepth 1 -type f -print0 | \
   xargs --null -r -Ifile -P36 -n1 bash -c \
     "cat 'file' | \
       xargs -r -Iline bash -c \
