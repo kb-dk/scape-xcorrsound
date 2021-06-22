@@ -10,16 +10,16 @@ mkdir -p "$baseFolder/index"
 
 #First, we find all the crashed runs
 # We delete the index files, as we will have to recreate them from scratch
-grep -l 'Segmentation' $SCRIPT_DIR/*.log | \
-  xargs -r -i basename {} .log | \
-  xargs -r -i rm "$baseFolder/index/{}.index" "$baseFolder/index/{}.index.map"
+grep -l 'Segmentation' "$SCRIPT_DIR/"*.log | \
+  xargs -r -i basename "{}" .log | \
+  xargs -r -i rm -f "$baseFolder/index/{}.index" "$baseFolder/index/{}.index.map"
 
 # move the error logs to errors, so they will not be regarded as completed below
-mkdir -p $SCRIPT_DIR/errors
-grep -l 'Segmentation' $SCRIPT_DIR/*.log | xargs -r -i mv {} $SCRIPT_DIR/errors
+mkdir -p "$SCRIPT_DIR/errors"
+grep -l 'Segmentation' "$SCRIPT_DIR/"*.log | xargs -r -i mv "{}" "$SCRIPT_DIR/errors"
 
 #Search for Finished Index in log files. These are the ones we do NOT need to recreate
-completedIndexes=$(grep -l "Finished index" $SCRIPT_DIR/*.log | xargs -r -i basename '{}' .log | sort)
+completedIndexes=$(grep -l "Finished index" "$SCRIPT_DIR/"*.log | xargs -r -i basename '{}' .log | sort)
 
 #This is the complete set input files
 inputFiles=$(ls -1 "$baseFolder/ismirInput/" | xargs -r -i basename '{}' | sort)
@@ -28,9 +28,9 @@ inputFiles=$(ls -1 "$baseFolder/ismirInput/" | xargs -r -i basename '{}' | sort)
 indexesToDo=$(comm -23 <(echo "$inputFiles") <(echo "$completedIndexes"))
 
 #Ensure that these future indexes do not already have a log file or index we would risk appending to
-echo "$indexesToDo" | xargs -r -i -n1 rm "$SCRIPT_DIR/{}.log" "$baseFolder/index/{}.index" "$baseFolder/index/{}.index.map"
+echo "$indexesToDo" | xargs -r -i -n1 rm -f "$SCRIPT_DIR/{}.log" "$baseFolder/index/{}.index" "$baseFolder/index/{}.index.map"
 
-rm -rf ${TmpSoundIndex:?}/*
+rm -rf "${TmpSoundIndex:?}/"*
 
 #Log when we started
 date
